@@ -3,15 +3,15 @@
 # This module manages nsswitch.
 #
 class nsswitch (
-  $config_file              = '/etc/nsswitch.conf',
-  $ensure_ldap              = 'absent',
-  $ensure_vas               = 'absent',
-  $vas_nss_module_passwd    = 'vas4',
-  $vas_nss_module_group     = 'vas4',
-  $vas_nss_module_automount = 'nis',
-  $vas_nss_module_netgroup  = 'nis',
-  $vas_nss_module_aliases   = undef,
-  $vas_nss_module_services  = undef,
+  Stdlib::Absolutepath $config_file              = '/etc/nsswitch.conf',
+  Enum['absent','present'] $ensure_ldap              = 'absent',
+  Enum['absent','present'] $ensure_vas               = 'absent',
+  String $vas_nss_module_passwd    = 'vas4',
+  String $vas_nss_module_group     = 'vas4',
+  String $vas_nss_module_automount = 'nis',
+  String $vas_nss_module_netgroup  = 'nis',
+  String $vas_nss_module_aliases   = undef,
+  String $vas_nss_module_services  = undef,
   $passwd                   = 'USE_DEFAULTS',
   $sudoers                  = 'USE_DEFAULTS',
   $shadow                   = 'USE_DEFAULTS',
@@ -32,19 +32,6 @@ class nsswitch (
   $nsswitch_prof_attr       = 'USE_DEFAULTS',
   $nsswitch_project         = 'USE_DEFAULTS',
 ) {
-
-  validate_absolute_path($config_file)
-  validate_re($ensure_ldap, '^(present|absent)$',
-    'Valid values for ensure_ldap are \'absent\' and \'present\'.')
-  validate_re($ensure_vas, '^(present|absent)$',
-    'Valid values for ensure_vas are \'absent\' and \'present\'.')
-  validate_string($vas_nss_module_passwd)
-  validate_string($vas_nss_module_group)
-  validate_string($vas_nss_module_automount)
-  validate_string($vas_nss_module_netgroup)
-  validate_string($vas_nss_module_aliases)
-  validate_string($vas_nss_module_services)
-
   case $::osfamily {
     'Debian','Suse': {
       $default_passwd             = 'files'
