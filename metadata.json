@@ -7,10 +7,10 @@
   "source": "git://github.com/ghoneycutt/puppet-module-nsswitch.git",
   "project_page": "https://github.com/ghoneycutt/puppet-module-nsswitch",
   "issues_url": "https://github.com/ghoneycutt/puppet-module-nsswitch/issues",
-  "requirements": [
+  "dependencies": [
     {
-      "name": "puppet",
-      "version_requirement": ">= 7.0.0 < 9.0.0"
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 4.6.0 < 10.0.0"
     }
   ],
   "operatingsystem_support": [
@@ -65,11 +65,14 @@
       "operatingsystem": "SLED"
     }
   ],
-  "description": "Manage nsswitch. Supports LDAP integration.",
-  "dependencies": [
+  "requirements": [
     {
-      "name": "puppetlabs/stdlib",
-      "version_requirement": ">= 4.6.0 < 10.0.0"
+      "name": "puppet",
+      "version_requirement": ">= 7.0.0 < 9.0.0"
     }
-  ]
+  ],
+  "description": "Manage nsswitch. Supports LDAP integration.",
+  "pdk-version": "3.2.0",
+  "template-url": "pdk-default#3.2.0",
+  "template-ref": "tags/3.2.0-0-gb257ef1"
 }
