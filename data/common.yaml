@@ -1,1 +1,51 @@
---- {}
+---
+
+nsswitch::config_file: '/etc/nsswitch.conf'
+nsswitch::ensure_ldap: absent
+nsswitch::ensure_vas: 'absent'
+nsswitch::vas_nss_module_passwd: 'vas4'
+nsswitch::vas_nss_module_group: 'vas4'
+nsswitch::vas_nss_module_automount: 'nis'
+nsswitch::vas_nss_module_netgroup: 'nis'
+nsswitch::vas_nss_module_aliases: undef
+nsswitch::vas_nss_module_services: undef
+#
+nsswitch::default_passwd: 'files'
+nsswitch::default_sudoers: 'files'
+nsswitch::default_shadow: 'files'
+nsswitch::default_group: 'files'
+nsswitch::default_hosts: 'files dns'
+nsswitch::default_automount: 'files'
+nsswitch::default_services: 'files'
+nsswitch::default_bootparams: 'files'
+nsswitch::default_aliases: 'files'
+nsswitch::default_publickey: 'files'
+nsswitch::default_netgroup: 'files'
+nsswitch::default_protocols: 'files'
+nsswitch::default_ethers: 'files'
+nsswitch::default_rpc: 'files'
+nsswitch::default_nsswitch_ipnodes: undef
+nsswitch::default_nsswitch_printers: undef
+nsswitch::default_nsswitch_auth_attr: undef
+nsswitch::default_nsswitch_prof_attr: undef
+nsswitch::default_nsswitch_project: undef
+#
+nsswitch::passwd: USE_DEFAULTS
+nsswitch::sudoers: USE_DEFAULTS
+nsswitch::shadow: USE_DEFAULTS
+nsswitch::group: USE_DEFAULTS
+nsswitch::hosts: USE_DEFAULTS
+nsswitch::automount: USE_DEFAULTS
+nsswitch::services: USE_DEFAULTS
+nsswitch::bootparams: USE_DEFAULTS
+nsswitch::aliases: USE_DEFAULTS
+nsswitch::publickey: USE_DEFAULTS
+nsswitch::netgroup: USE_DEFAULTS
+nsswitch::protocols: USE_DEFAULTS
+nsswitch::ethers: USE_DEFAULTS
+nsswitch::rpc: USE_DEFAULTS
+nsswitch::nsswitch_ipnodes: USE_DEFAULTS
+nsswitch::nsswitch_printers: USE_DEFAULTS
+nsswitch::nsswitch_auth_attr: USE_DEFAULTS
+nsswitch::nsswitch_prof_attr: USE_DEFAULTS
+nsswitch::nsswitch_project: USE_DEFAULTS
