@@ -3,281 +3,147 @@
 # This module manages nsswitch.
 #
 class nsswitch (
-  $config_file              = '/etc/nsswitch.conf',
-  $ensure_ldap              = 'absent',
-  $ensure_vas               = 'absent',
-  $vas_nss_module_passwd    = 'vas4',
-  $vas_nss_module_group     = 'vas4',
-  $vas_nss_module_automount = 'nis',
-  $vas_nss_module_netgroup  = 'nis',
-  $vas_nss_module_aliases   = undef,
-  $vas_nss_module_services  = undef,
-  $passwd                   = 'USE_DEFAULTS',
-  $sudoers                  = 'USE_DEFAULTS',
-  $shadow                   = 'USE_DEFAULTS',
-  $group                    = 'USE_DEFAULTS',
-  $hosts                    = 'USE_DEFAULTS',
-  $automount                = 'USE_DEFAULTS',
-  $services                 = 'USE_DEFAULTS',
-  $bootparams               = 'USE_DEFAULTS',
-  $aliases                  = 'USE_DEFAULTS',
-  $publickey                = 'USE_DEFAULTS',
-  $netgroup                 = 'USE_DEFAULTS',
-  $protocols                = 'USE_DEFAULTS',
-  $ethers                   = 'USE_DEFAULTS',
-  $rpc                      = 'USE_DEFAULTS',
-  $nsswitch_ipnodes         = 'USE_DEFAULTS',
-  $nsswitch_printers        = 'USE_DEFAULTS',
-  $nsswitch_auth_attr       = 'USE_DEFAULTS',
-  $nsswitch_prof_attr       = 'USE_DEFAULTS',
-  $nsswitch_project         = 'USE_DEFAULTS',
+  Stdlib::Absolutepath $config_file,
+  Enum['absent','present'] $ensure_ldap,
+  Enum['absent','present'] $ensure_vas,
+  String $vas_nss_module_passwd,
+  String $vas_nss_module_group,
+  String $vas_nss_module_automount,
+  String $vas_nss_module_netgroup,
+  String $vas_nss_module_aliases,
+  String $vas_nss_module_services,
+  String $passwd,
+  String $sudoers,
+  String $shadow,
+  String $group,
+  String $hosts,
+  String $automount,
+  String $services,
+  String $bootparams,
+  String $aliases,
+  String $publickey,
+  String $netgroup,
+  String $protocols,
+  String $ethers,
+  String $rpc,
+  String $nsswitch_ipnodes,
+  String $nsswitch_printers,
+  String $nsswitch_auth_attr,
+  String $nsswitch_prof_attr,
+  String $nsswitch_project,
 ) {
-
-  validate_absolute_path($config_file)
-  validate_re($ensure_ldap, '^(present|absent)$',
-    'Valid values for ensure_ldap are \'absent\' and \'present\'.')
-  validate_re($ensure_vas, '^(present|absent)$',
-    'Valid values for ensure_vas are \'absent\' and \'present\'.')
-  validate_string($vas_nss_module_passwd)
-  validate_string($vas_nss_module_group)
-  validate_string($vas_nss_module_automount)
-  validate_string($vas_nss_module_netgroup)
-  validate_string($vas_nss_module_aliases)
-  validate_string($vas_nss_module_services)
-
-  case $::osfamily {
-    'Debian','Suse': {
-      $default_passwd             = 'files'
-      $default_sudoers            = 'files'
-      $default_shadow             = 'files'
-      $default_group              = 'files'
-      $default_hosts              = 'files dns'
-      $default_automount          = 'files'
-      $default_services           = 'files'
-      $default_bootparams         = 'files'
-      $default_aliases            = 'files'
-      $default_publickey          = 'files'
-      $default_netgroup           = 'files'
-      $default_protocols          = 'files'
-      $default_ethers             = 'files'
-      $default_rpc                = 'files'
-      $default_nsswitch_ipnodes   = undef
-      $default_nsswitch_printers  = undef
-      $default_nsswitch_auth_attr = undef
-      $default_nsswitch_prof_attr = undef
-      $default_nsswitch_project   = undef
-    }
-    'RedHat': {
-      if $::operatingsystemmajrelease == '7' {
-        $default_passwd     = 'files sss'
-        $default_sudoers    = 'files sss'
-        $default_shadow     = 'files sss'
-        $default_group      = 'files sss'
-        $default_hosts      = 'files dns myhostname'
-        $default_automount  = 'files sss'
-        $default_services   = 'files sss'
-        $default_bootparams = 'nisplus [NOTFOUND=return] files'
-        $default_aliases    = 'files nisplus'
-        $default_publickey  = 'nisplus'
-        $default_netgroup   = 'files sss'
-        $default_protocols  = 'files'
-        $default_ethers     = 'files'
-        $default_rpc        = 'files'
-      } else {
-        $default_passwd     = 'files'
-        $default_sudoers    = 'files'
-        $default_shadow     = 'files'
-        $default_group      = 'files'
-        $default_hosts      = 'files dns'
-        $default_automount  = 'files'
-        $default_services   = 'files'
-        $default_bootparams = 'files'
-        $default_aliases    = 'files'
-        $default_publickey  = 'files'
-        $default_netgroup   = 'files'
-        $default_protocols  = 'files'
-        $default_ethers     = 'files'
-        $default_rpc        = 'files'
-      }
-
-      $default_nsswitch_ipnodes   = undef
-      $default_nsswitch_printers  = undef
-      $default_nsswitch_auth_attr = undef
-      $default_nsswitch_prof_attr = undef
-      $default_nsswitch_project   = undef
-    }
-    'Solaris': {
-      $default_passwd             = 'files'
-      $default_sudoers            = 'files'
-      $default_shadow             = 'files'
-      $default_group              = 'files'
-      $default_hosts              = 'files dns'
-      $default_automount          = 'files'
-      $default_services           = 'files'
-      $default_bootparams         = 'files'
-      $default_aliases            = 'files'
-      $default_publickey          = 'files'
-      $default_netgroup           = 'files'
-      $default_protocols          = 'files'
-      $default_ethers             = 'files'
-      $default_rpc                = 'files'
-      $default_nsswitch_ipnodes   = 'files dns'
-      $default_nsswitch_printers  = 'user files'
-      $default_nsswitch_auth_attr = 'files'
-      $default_nsswitch_prof_attr = 'files'
-      $default_nsswitch_project   = 'files'
-    }
-    default: {
-      fail("nsswitch supports osfamilies Debian, RedHat, Solaris and Suse. Detected osfamily is <${::osfamily}>.")
-    }
-  }
-
   if $passwd == 'USE_DEFAULTS' {
-    $passwd_real = $default_passwd
+    $passwd_real = $nsswitch::default_passwd
   } else {
     $passwd_real = $passwd
   }
-  validate_string($passwd_real)
 
-  if $protocols == 'USE_DEFAULTS' {
-    $protocols_real = $default_protocols
+  if $nsswitch::protocols == 'USE_DEFAULTS' {
+    $protocols_real = $nsswitch::default_protocols
   } else {
-    $protocols_real = $protocols
+    $protocols_real = $nsswitch::protocols
   }
-  validate_string($protocols_real)
 
-  if $ethers == 'USE_DEFAULTS' {
-    $ethers_real = $default_ethers
+  if $nsswitch::ethers == 'USE_DEFAULTS' {
+    $ethers_real = $nsswitch::default_ethers
   } else {
-    $ethers_real = $ethers
+    $ethers_real = $nsswitch::ethers
   }
-  validate_string($ethers_real)
 
-  if $rpc == 'USE_DEFAULTS' {
-    $rpc_real = $default_rpc
+  if $nsswitch::rpc == 'USE_DEFAULTS' {
+    $rpc_real = $nsswitch::default_rpc
   } else {
-    $rpc_real = $rpc
+    $rpc_real = $nsswitch::rpc
   }
-  validate_string($rpc_real)
 
-  if $shadow == 'USE_DEFAULTS' {
-    $shadow_real = $default_shadow
+  if $nsswitch::shadow == 'USE_DEFAULTS' {
+    $shadow_real = $nsswitch::default_shadow
   } else {
-    $shadow_real = $shadow
+    $shadow_real = $nsswitch::shadow
   }
-  validate_string($shadow_real)
 
-  if $sudoers == 'USE_DEFAULTS' {
-    $sudoers_real = $default_sudoers
+  if $nsswitch::sudoers == 'USE_DEFAULTS' {
+    $sudoers_real = $nsswitch::default_sudoers
   } else {
-    $sudoers_real = $sudoers
+    $sudoers_real = $nsswitch::sudoers
   }
-  validate_string($sudoers_real)
 
-  if $group == 'USE_DEFAULTS' {
-    $group_real = $default_group
+  if $nsswitch::group == 'USE_DEFAULTS' {
+    $group_real = $nsswitch::default_group
   } else {
-    $group_real = $group
+    $group_real = $nsswitch::group
   }
-  validate_string($group_real)
 
-  if $hosts == 'USE_DEFAULTS' {
-    $hosts_real = $default_hosts
+  if $nsswitch::hosts == 'USE_DEFAULTS' {
+    $hosts_real = $nsswitch::default_hosts
   } else {
-    $hosts_real = $hosts
+    $hosts_real = $nsswitch::hosts
   }
-  validate_string($hosts_real)
 
-  if $automount == 'USE_DEFAULTS' {
-    $automount_real = $default_automount
+  if $nsswitch::automount == 'USE_DEFAULTS' {
+    $automount_real = $nsswitch::default_automount
   } else {
-    $automount_real = $automount
+    $automount_real = $nsswitch::automount
   }
-  validate_string($automount_real)
 
-  if $services == 'USE_DEFAULTS' {
-    $services_real = $default_services
+  if $nsswitch::services == 'USE_DEFAULTS' {
+    $services_real = $nsswitch::default_services
   } else {
-    $services_real = $services
+    $services_real = $nsswitch::services
   }
-  validate_string($services_real)
 
-  if $bootparams == 'USE_DEFAULTS' {
-    $bootparams_real = $default_bootparams
+  if $nsswitch::bootparams == 'USE_DEFAULTS' {
+    $bootparams_real = $nsswitch::default_bootparams
   } else {
-    $bootparams_real = $bootparams
+    $bootparams_real = $nsswitch::bootparams
   }
-  validate_string($bootparams_real)
 
-  if $aliases == 'USE_DEFAULTS' {
-    $aliases_real = $default_aliases
+  if $nsswitch::aliases == 'USE_DEFAULTS' {
+    $aliases_real = $nsswitch::default_aliases
   } else {
-    $aliases_real = $aliases
+    $aliases_real = $nsswitch::aliases
   }
-  validate_string($aliases_real)
 
-  if $publickey == 'USE_DEFAULTS' {
-    $publickey_real = $default_publickey
+  if $nsswitch::publickey == 'USE_DEFAULTS' {
+    $publickey_real = $nsswitch::default_publickey
   } else {
-    $publickey_real = $publickey
+    $publickey_real = $nsswitch::publickey
   }
-  validate_string($publickey_real)
 
-  if $netgroup == 'USE_DEFAULTS' {
-    $netgroup_real = $default_netgroup
+  if $nsswitch::netgroup == 'USE_DEFAULTS' {
+    $netgroup_real = $nsswitch::default_netgroup
   } else {
-    $netgroup_real = $netgroup
+    $netgroup_real = $nsswitch::netgroup
   }
-  validate_string($netgroup_real)
 
-  if $nsswitch_ipnodes == 'USE_DEFAULTS' {
-    $nsswitch_ipnodes_real = $default_nsswitch_ipnodes
+  if $nsswitch::nsswitch_ipnodes == 'USE_DEFAULTS' {
+    $nsswitch_ipnodes_real = $nsswitch::default_nsswitch_ipnodes
   } else {
-    $nsswitch_ipnodes_real = $nsswitch_ipnodes
+    $nsswitch_ipnodes_real = $nsswitch::nsswitch_ipnodes
   }
 
-  if $nsswitch_ipnodes_real != undef {
-    validate_string($nsswitch_ipnodes_real)
-  }
-
-  if $nsswitch_printers == 'USE_DEFAULTS' {
-    $nsswitch_printers_real = $default_nsswitch_printers
+  if $nsswitch::nsswitch_printers == 'USE_DEFAULTS' {
+    $nsswitch_printers_real = $nsswitch::default_nsswitch_printers
   } else {
-    $nsswitch_printers_real = $nsswitch_printers
+    $nsswitch_printers_real = $nsswitch::nsswitch_printers
   }
 
-  if $nsswitch_printers_real != undef {
-    validate_string($nsswitch_printers_real)
-  }
-
-  if $nsswitch_auth_attr == 'USE_DEFAULTS' {
-    $nsswitch_auth_attr_real = $default_nsswitch_auth_attr
+  if $nsswitch::nsswitch_auth_attr == 'USE_DEFAULTS' {
+    $nsswitch_auth_attr_real = $nsswitch::default_nsswitch_auth_attr
   } else {
-    $nsswitch_auth_attr_real = $nsswitch_auth_attr
+    $nsswitch_auth_attr_real = $nsswitch::nsswitch_auth_attr
   }
 
-  if $nsswitch_auth_attr_real != undef {
-    validate_string($nsswitch_auth_attr_real)
-  }
-
-  if $nsswitch_prof_attr == 'USE_DEFAULTS' {
-    $nsswitch_prof_attr_real = $default_nsswitch_prof_attr
+  if $nsswitch::nsswitch_prof_attr == 'USE_DEFAULTS' {
+    $nsswitch_prof_attr_real = $nsswitch::default_nsswitch_prof_attr
   } else {
-    $nsswitch_prof_attr_real = $nsswitch_prof_attr
+    $nsswitch_prof_attr_real = $nsswitch::nsswitch_prof_attr
   }
 
-  if $nsswitch_prof_attr_real != undef {
-    validate_string($nsswitch_prof_attr_real)
-  }
-
-  if $nsswitch_project == 'USE_DEFAULTS' {
-    $nsswitch_project_real = $default_nsswitch_project
+  if $nsswitch::nsswitch_project == 'USE_DEFAULTS' {
+    $nsswitch_project_real = $nsswitch::default_nsswitch_project
   } else {
-    $nsswitch_project_real = $nsswitch_project
-  }
-
-  if $nsswitch_project_real != undef {
-    validate_string($nsswitch_project_real)
+    $nsswitch_project_real = $nsswitch::nsswitch_project
   }
 
   file { 'nsswitch_config_file':
